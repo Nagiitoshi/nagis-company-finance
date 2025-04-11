@@ -17,38 +17,41 @@ import Reports from "./pages/Reports";
 import NotFound from "./pages/NotFound";
 import Index from "./pages/Index";
 
-const queryClient = new QueryClient();
+// Move queryClient instantiation inside component to fix "dispatcher is null" error
+const App = () => {
+  const queryClient = new QueryClient();
+  
+  return (
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
+        <AuthProvider>
+          <TransactionProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              <BrowserRouter>
+                <Routes>
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
+                  
+                  <Route path="/" element={<Index />} />
+                  
+                  <Route element={<PrivateRoute />}>
+                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/entradas" element={<Income />} />
+                    <Route path="/saidas" element={<Expense />} />
+                    <Route path="/relatorios" element={<Reports />} />
+                  </Route>
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <ThemeProvider>
-      <AuthProvider>
-        <TransactionProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <Routes>
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-                
-                <Route path="/" element={<Index />} />
-                
-                <Route element={<PrivateRoute />}>
-                  <Route path="/dashboard" element={<Dashboard />} />
-                  <Route path="/entradas" element={<Income />} />
-                  <Route path="/saidas" element={<Expense />} />
-                  <Route path="/relatorios" element={<Reports />} />
-                </Route>
-
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </BrowserRouter>
-          </TooltipProvider>
-        </TransactionProvider>
-      </AuthProvider>
-    </ThemeProvider>
-  </QueryClientProvider>
-);
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </BrowserRouter>
+            </TooltipProvider>
+          </TransactionProvider>
+        </AuthProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;
