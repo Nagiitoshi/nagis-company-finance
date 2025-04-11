@@ -53,6 +53,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         localStorage.setItem("user", JSON.stringify(userWithoutPassword));
         setUser(userWithoutPassword);
         toast.success("Login realizado com sucesso!");
+        return true;
       } else {
         throw new Error("Credenciais inválidas");
       }
@@ -81,12 +82,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       // Em um cenário real, aqui seria feita a chamada para o backend
       registeredUsers.push(newUser);
       
-      // Login automático após o registro
-      const { password: _, ...userWithoutPassword } = newUser;
-      localStorage.setItem("user", JSON.stringify(userWithoutPassword));
-      setUser(userWithoutPassword);
-      
-      toast.success("Registro realizado com sucesso!");
+      toast.success("Registro realizado com sucesso! Redirecionando para o login...");
+      return true;
     } catch (error) {
       if ((error as Error).message === "Email já em uso") {
         throw error;

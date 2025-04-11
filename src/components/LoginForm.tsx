@@ -5,18 +5,26 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "./ui/card";
 import { Label } from "./ui/label";
+import { useNavigate } from "react-router-dom";
 
 export const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      await login(email, password);
+      const success = await login(email, password);
+      if (success) {
+        // Redireciona para o dashboard após login bem-sucedido
+        setTimeout(() => {
+          navigate('/dashboard');
+        }, 500);
+      }
     } catch (error) {
       console.error("Login falhou", error);
     } finally {

@@ -5,6 +5,7 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "./ui/card";
 import { Label } from "./ui/label";
+import { useNavigate } from "react-router-dom";
 
 export const RegisterForm = () => {
   const [name, setName] = useState("");
@@ -14,6 +15,7 @@ export const RegisterForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({ name: "", email: "", password: "", confirmPassword: "" });
   const { register } = useAuth();
+  const navigate = useNavigate();
 
   const validate = () => {
     let tempErrors = { name: "", email: "", password: "", confirmPassword: "" };
@@ -56,7 +58,13 @@ export const RegisterForm = () => {
     
     setIsLoading(true);
     try {
-      await register(name, email, password);
+      const success = await register(name, email, password);
+      if (success) {
+        // Redireciona para a página de login após o registro bem-sucedido
+        setTimeout(() => {
+          navigate('/login');
+        }, 1500); // Pequeno atraso para que o usuário veja a mensagem de sucesso
+      }
     } catch (error) {
       console.error("Registro falhou", error);
     } finally {
