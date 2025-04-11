@@ -17,13 +17,17 @@ export const useTheme = () => {
 };
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
-  // Check if user has already set a preference in localStorage
-  const [isDarkMode, setIsDarkMode] = useState(() => {
+  // Initialize with a default value, then update in useEffect
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  
+  // Move the initialization logic to useEffect to ensure it runs in browser environment
+  useEffect(() => {
     const savedTheme = localStorage.getItem("theme");
-    // Check for saved theme or system preference
-    return savedTheme === "dark" || 
-      (!savedTheme && window.matchMedia("(prefers-color-scheme: dark)").matches);
-  });
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    
+    // Set initial theme based on localStorage or system preference
+    setIsDarkMode(savedTheme === "dark" || (!savedTheme && prefersDark));
+  }, []);
 
   // Update body class and localStorage when theme changes
   useEffect(() => {
