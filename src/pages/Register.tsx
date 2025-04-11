@@ -1,7 +1,7 @@
 
-import { LoginForm } from "../components/LoginForm";
+import { RegisterForm } from "../components/RegisterForm";
 
-const Login = () => {
+const Register = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-md space-y-8">
@@ -11,11 +11,11 @@ const Login = () => {
             Gerencie suas finanças de forma simples e eficiente
           </p>
         </div>
-        <LoginForm />
+        <RegisterForm />
         <p className="text-center text-sm">
-          Ainda não tem uma conta?{" "}
-          <a href="/register" className="font-medium text-primary hover:underline">
-            Criar conta
+          Já tem uma conta?{" "}
+          <a href="/login" className="font-medium text-primary hover:underline">
+            Fazer login
           </a>
         </p>
       </div>
@@ -23,4 +23,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;
