@@ -53,11 +53,13 @@ export const DashboardCharts = () => {
   const incomeData = Object.entries(incomeByCategory).map(([category, amount]) => ({
     name: categoryLabels[category] || category,
     value: amount,
+    type: "income"
   }));
 
   const expenseData = Object.entries(expenseByCategory).map(([category, amount]) => ({
     name: categoryLabels[category] || category,
     value: amount,
+    type: "expense"
   }));
 
   // Formatar valor nos tooltips
@@ -111,11 +113,20 @@ export const DashboardCharts = () => {
               <Tooltip formatter={formatTooltipValue} />
               <Bar
                 dataKey="value"
-                fill={(data) => {
-                  const isIncome = incomeData.some((item) => item.name === data.name);
-                  return isIncome ? COLORS[0] : COLORS[1];
-                }}
-              />
+                fill="#8884d8"
+                stroke="#8884d8"
+                fillOpacity={0.6}
+                strokeOpacity={0.8}
+                name="Valor"
+                isAnimationActive={true}
+              >
+                {[...incomeData, ...expenseData].map((entry, index) => (
+                  <Cell
+                    key={`cell-${index}`}
+                    fill={entry.type === "income" ? COLORS[0] : COLORS[1]}
+                  />
+                ))}
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
         </CardContent>
