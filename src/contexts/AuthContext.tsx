@@ -20,8 +20,8 @@ const mockUser: User = {
   email: "usuario@teste.com",
 };
 
-// Array de usuários cadastrados
-const registeredUsers = [
+// Array de usuários cadastrados (manteremos em memória local e no localStorage)
+let registeredUsers = [
   {
     id: "1",
     name: "Usuário Teste",
@@ -33,7 +33,13 @@ const registeredUsers = [
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
 
+  // Carregar usuários registrados do localStorage
   useEffect(() => {
+    const storedUsers = localStorage.getItem("registeredUsers");
+    if (storedUsers) {
+      registeredUsers = JSON.parse(storedUsers);
+    }
+    
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
       setUser(JSON.parse(storedUser));
@@ -82,6 +88,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       // Em um cenário real, aqui seria feita a chamada para o backend
       registeredUsers.push(newUser);
       
+      // Salvar no localStorage
+      localStorage.setItem("registeredUsers", JSON.stringify(registeredUsers));
+      
       toast.success("Registro realizado com sucesso! Redirecionando para o login...");
       return true;
     } catch (error) {
@@ -91,6 +100,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       toast.error("Falha no registro. Por favor, tente novamente.");
       throw error;
     }
+  };
+
+  const deleteAccount = () => {
+    if (!user) return;
+    
+    // Remover o usuário do array registeredUsers
+    registeredUsers = registeredUsers.filter(u => u.id !== user.id);
+    
+    // Atualizar no localStorage
+    localStorage.setItem("registeredUsers", JSON.stringify(registeredUsers));
+    
+    // Remover o usuário logado
+    localStorage.removeItem("user");
+    setUser(null);
+    
+    toast.success("Conta excluída com sucesso.");
   };
 
   const logout = () => {
@@ -106,6 +131,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         login,
         register,
         logout,
+        deleteAccount,
         isAuthenticated: !!user,
       }}
     >

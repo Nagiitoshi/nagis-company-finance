@@ -71,6 +71,11 @@ export default {
           DEFAULT: '#DC2626',
           light: '#FEF2F2',
         },
+        purple: {
+          DEFAULT: '#7E69AB',
+          light: '#9b87f5',
+          dark: '#6E59A5',
+        },
       },
       borderRadius: {
         lg: 'var(--radius)',

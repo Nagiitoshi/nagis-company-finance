@@ -12,6 +12,7 @@ export type Transaction = {
   date: string;
   category: string;
   type: "income" | "expense";
+  installments?: number; // Added for card installments feature
 };
 
 export type AuthContextType = {
@@ -19,6 +20,7 @@ export type AuthContextType = {
   login: (email: string, password: string) => Promise<boolean>;
   register: (name: string, email: string, password: string) => Promise<boolean>;
   logout: () => void;
+  deleteAccount: () => void; // Added for account deletion
   isAuthenticated: boolean;
 };
 

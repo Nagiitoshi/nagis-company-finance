@@ -13,7 +13,7 @@ import {
 import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Button } from "./ui/button";
-import { Trash2 } from "lucide-react";
+import { CreditCard, Trash2 } from "lucide-react";
 import { Badge } from "./ui/badge";
 import { Transaction } from "@/types";
 
@@ -43,7 +43,7 @@ export const TransactionList = ({ type }: TransactionListProps) => {
 
   if (filteredTransactions.length === 0) {
     return (
-      <Card className="mt-6">
+      <Card className="mt-6 dark:bg-gray-800 dark:text-white">
         <CardHeader>
           <CardTitle className="text-xl">
             {type === "income" ? "Entradas Recentes" : "Saídas Recentes"}
@@ -59,7 +59,7 @@ export const TransactionList = ({ type }: TransactionListProps) => {
   }
 
   return (
-    <Card className="mt-6">
+    <Card className="mt-6 dark:bg-gray-800">
       <CardHeader>
         <CardTitle className="text-xl">
           {type === "income" ? "Entradas Recentes" : "Saídas Recentes"}
@@ -74,6 +74,7 @@ export const TransactionList = ({ type }: TransactionListProps) => {
                 <TableHead>Data</TableHead>
                 <TableHead>Categoria</TableHead>
                 <TableHead className="text-right">Valor</TableHead>
+                {type === "expense" && <TableHead>Parcelas</TableHead>}
                 <TableHead className="w-[50px]"></TableHead>
               </TableRow>
             </TableHeader>
@@ -96,6 +97,18 @@ export const TransactionList = ({ type }: TransactionListProps) => {
                   }`}>
                     {formatCurrency(transaction.amount)}
                   </TableCell>
+                  {type === "expense" && (
+                    <TableCell>
+                      {transaction.installments && transaction.installments > 1 ? (
+                        <div className="flex items-center gap-1">
+                          <CreditCard className="h-3 w-3" />
+                          <span>{transaction.installments}x</span>
+                        </div>
+                      ) : (
+                        <span>-</span>
+                      )}
+                    </TableCell>
+                  )}
                   <TableCell>
                     <Button
                       variant="ghost"
