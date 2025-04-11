@@ -1,9 +1,13 @@
 
 import { LoginForm } from "../components/LoginForm";
+import { ThemeSwitcher } from "../components/ThemeSwitcher";
 
 const Login = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="absolute top-4 right-4">
+        <ThemeSwitcher />
+      </div>
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
           <h1 className="text-3xl font-bold text-primary">Nagi's Company</h1>
