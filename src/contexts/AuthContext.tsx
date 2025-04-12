@@ -2,6 +2,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { AuthContextType, User } from "../types";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -13,22 +14,13 @@ export const useAuth = () => {
   return context;
 };
 
-// Mock user para simulação da API
-const mockUser: User = {
-  id: "1",
-  name: "Usuário Teste",
-  email: "usuario@teste.com",
-};
-
-// Array de usuários cadastrados (manteremos em memória local e no localStorage)
-let registeredUsers = [
-  {
-    id: "1",
-    name: "Usuário Teste",
-    email: "usuario@teste.com",
-    password: "senha123"
-  }
-];
+// Array of users cadastrados (manteremos em memória local e no localStorage)
+let registeredUsers: Array<{
+  id: string;
+  name: string;
+  email: string;
+  password: string;
+}> = [];
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -47,7 +39,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const login = async (email: string, password: string) => {
-    // Simulação de chamada de API
     try {
       // Verificar se o usuário existe
       const userFound = registeredUsers.find(
@@ -77,15 +68,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         throw new Error("Email já em uso");
       }
 
-      // Criar novo usuário
+      // Criar novo usuário com ID único baseado em timestamp
       const newUser = {
-        id: `${registeredUsers.length + 1}`,
+        id: `${Date.now()}`, // Usando timestamp para garantir IDs únicos
         name,
         email,
         password
       };
 
-      // Em um cenário real, aqui seria feita a chamada para o backend
+      // Adicionar à lista de usuários
       registeredUsers.push(newUser);
       
       // Salvar no localStorage
@@ -103,19 +94,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const deleteAccount = () => {
-    if (!user) return;
+    if (!user) {
+      toast.error("Nenhum usuário logado para excluir.");
+      return;
+    }
     
     // Remover o usuário do array registeredUsers
-    registeredUsers = registeredUsers.filter(u => u.id !== user.id);
+    const userIndex = registeredUsers.findIndex(u => u.id === user.id);
     
-    // Atualizar no localStorage
-    localStorage.setItem("registeredUsers", JSON.stringify(registeredUsers));
-    
-    // Remover o usuário logado
-    localStorage.removeItem("user");
-    setUser(null);
-    
-    toast.success("Conta excluída com sucesso.");
+    if (userIndex >= 0) {
+      registeredUsers.splice(userIndex, 1);
+      
+      // Atualizar no localStorage
+      localStorage.setItem("registeredUsers", JSON.stringify(registeredUsers));
+      
+      // Remover o usuário logado
+      localStorage.removeItem("user");
+      setUser(null);
+      
+      toast.success("Conta excluída com sucesso.");
+    } else {
+      toast.error("Erro ao excluir conta. Usuário não encontrado.");
+    }
   };
 
   const logout = () => {

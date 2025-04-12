@@ -2,10 +2,17 @@
 import { ReactNode } from "react";
 import { Navbar } from "./Navbar";
 import { Sidebar } from "./Sidebar";
+import { useTheme } from "@/contexts/ThemeContext";
+import { cn } from "@/lib/utils";
 
 export const Layout = ({ children }: { children: ReactNode }) => {
+  const { isDarkMode } = useTheme();
+  
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className={cn(
+      "min-h-screen flex flex-col",
+      isDarkMode ? "bg-gray-900" : "bg-gray-50"
+    )}>
       <Navbar />
       <div className="flex-1 flex">
         <Sidebar />
