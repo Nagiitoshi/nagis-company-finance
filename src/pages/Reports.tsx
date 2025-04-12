@@ -4,23 +4,27 @@ import { DashboardCharts } from "../components/DashboardCharts";
 import { useTransactions } from "../contexts/TransactionContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatCurrency } from "@/utils/formatCurrency";
+import { MonthSelector } from "@/components/MonthSelector";
+import { MonthlyCharts } from "@/components/MonthlyCharts";
 
 const Reports = () => {
-  const { transactions, getIncomeTotal, getExpenseTotal, getBalance } = useTransactions();
+  const { transactions, getIncomeTotal, getExpenseTotal, getBalance, selectedMonth } = useTransactions();
 
   // Calcular totais por categoria
-  const categoryTotals = transactions.reduce((acc, transaction) => {
-    const { category, amount, type } = transaction;
-    if (!acc[category]) {
-      acc[category] = { income: 0, expense: 0 };
-    }
-    if (type === "income") {
-      acc[category].income += amount;
-    } else {
-      acc[category].expense += amount;
-    }
-    return acc;
-  }, {} as Record<string, { income: number; expense: number }>);
+  const categoryTotals = transactions
+    .filter(transaction => transaction.date.startsWith(selectedMonth))
+    .reduce((acc, transaction) => {
+      const { category, amount, type } = transaction;
+      if (!acc[category]) {
+        acc[category] = { income: 0, expense: 0 };
+      }
+      if (type === "income") {
+        acc[category].income += amount;
+      } else {
+        acc[category].expense += amount;
+      }
+      return acc;
+    }, {} as Record<string, { income: number; expense: number }>);
 
   // Rótulos para as categorias
   const categoryLabels: Record<string, string> = {
@@ -48,6 +52,10 @@ const Reports = () => {
         <MobileSidebar />
       </div>
 
+      <div className="mb-6">
+        <MonthSelector />
+      </div>
+
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader>
@@ -55,7 +63,7 @@ const Reports = () => {
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-bold text-income">
-              {formatCurrency(getIncomeTotal())}
+              {formatCurrency(getIncomeTotal(selectedMonth))}
             </p>
           </CardContent>
         </Card>
@@ -66,7 +74,7 @@ const Reports = () => {
           </CardHeader>
           <CardContent>
             <p className="text-2xl font-bold text-expense">
-              {formatCurrency(getExpenseTotal())}
+              {formatCurrency(getExpenseTotal(selectedMonth))}
             </p>
           </CardContent>
         </Card>
@@ -76,14 +84,17 @@ const Reports = () => {
             <CardTitle className="text-lg">Saldo</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className={`text-2xl font-bold ${getBalance() >= 0 ? "text-income" : "text-expense"}`}>
-              {formatCurrency(getBalance())}
+            <p className={`text-2xl font-bold ${getBalance(selectedMonth) >= 0 ? "text-income" : "text-expense"}`}>
+              {formatCurrency(getBalance(selectedMonth))}
             </p>
           </CardContent>
         </Card>
       </div>
 
       <DashboardCharts />
+
+      {/* Monthly charts */}
+      <MonthlyCharts />
 
       <Card>
         <CardHeader>

@@ -16,6 +16,7 @@ import { Button } from "./ui/button";
 import { CreditCard, Trash2 } from "lucide-react";
 import { Badge } from "./ui/badge";
 import { Transaction } from "@/types";
+import { MonthSelector } from "./MonthSelector";
 
 const categoryLabels: Record<string, string> = {
   salary: "Salário",
@@ -35,23 +36,26 @@ interface TransactionListProps {
 }
 
 export const TransactionList = ({ type }: TransactionListProps) => {
-  const { transactions, deleteTransaction } = useTransactions();
+  const { transactions, deleteTransaction, selectedMonth } = useTransactions();
 
   const filteredTransactions = transactions.filter(
-    (transaction) => transaction.type === type
+    (transaction) => 
+      transaction.type === type && 
+      transaction.date.startsWith(selectedMonth)
   );
 
   if (filteredTransactions.length === 0) {
     return (
       <Card className="mt-6 dark:bg-gray-800 dark:text-white">
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-xl">
             {type === "income" ? "Entradas Recentes" : "Saídas Recentes"}
           </CardTitle>
+          <MonthSelector />
         </CardHeader>
         <CardContent>
           <p className="text-muted-foreground text-center py-8">
-            Nenhuma {type === "income" ? "entrada" : "saída"} registrada.
+            Nenhuma {type === "income" ? "entrada" : "saída"} registrada para este mês.
           </p>
         </CardContent>
       </Card>
@@ -60,10 +64,11 @@ export const TransactionList = ({ type }: TransactionListProps) => {
 
   return (
     <Card className="mt-6 dark:bg-gray-800">
-      <CardHeader>
+      <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-xl">
           {type === "income" ? "Entradas Recentes" : "Saídas Recentes"}
         </CardTitle>
+        <MonthSelector />
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">

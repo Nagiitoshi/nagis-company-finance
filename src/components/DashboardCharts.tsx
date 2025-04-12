@@ -37,17 +37,20 @@ const categoryLabels: Record<string, string> = {
 };
 
 export const DashboardCharts = () => {
-  const { transactions, getIncomeTotal, getExpenseTotal } = useTransactions();
+  const { getIncomeTotal, getExpenseTotal, selectedMonth, getFilteredTransactions } = useTransactions();
   
+  // Get transactions for the selected month
+  const filteredTransactions = getFilteredTransactions(selectedMonth);
+
   // Dados para o gráfico de pizza (distribuição de receitas e despesas)
   const pieData = [
-    { name: "Entradas", value: getIncomeTotal() },
-    { name: "Saídas", value: getExpenseTotal() },
+    { name: "Entradas", value: getIncomeTotal(selectedMonth) },
+    { name: "Saídas", value: getExpenseTotal(selectedMonth) },
   ];
 
   // Agrupar transações por categoria
-  const incomeByCategory = groupByCategory(transactions, "income");
-  const expenseByCategory = groupByCategory(transactions, "expense");
+  const incomeByCategory = groupByCategory(filteredTransactions, "income");
+  const expenseByCategory = groupByCategory(filteredTransactions, "expense");
 
   // Preparar dados para os gráficos de barra
   const incomeData = Object.entries(incomeByCategory).map(([category, amount]) => ({

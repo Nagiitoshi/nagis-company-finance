@@ -28,7 +28,15 @@ export type TransactionContextType = {
   transactions: Transaction[];
   addTransaction: (transaction: Omit<Transaction, "id">) => void;
   deleteTransaction: (id: string) => void;
-  getIncomeTotal: () => number;
-  getExpenseTotal: () => number;
-  getBalance: () => number;
+  getIncomeTotal: (month?: string) => number;
+  getExpenseTotal: (month?: string) => number;
+  getBalance: (month?: string) => number;
+  selectedMonth: string;
+  setSelectedMonth: (month: string) => void;
+  getFilteredTransactions: (month?: string) => Transaction[];
+  getTransactionsByMonth: () => Array<{
+    month: string;
+    income: number;
+    expense: number;
+  }>;
 };
