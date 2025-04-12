@@ -3,6 +3,8 @@ import { createContext, useContext, useState, ReactNode, useEffect } from "react
 import { TransactionContextType, Transaction } from "../types";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
+import { useAuth } from "./AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 
 const TransactionContext = createContext<TransactionContextType | null>(null);
 
@@ -16,21 +18,39 @@ export const useTransactions = () => {
 
 export const TransactionProvider = ({ children }: { children: ReactNode }) => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const { user } = useAuth();
 
-  // Carregar transações do localStorage
+  // Load transactions from localStorage with user-specific key
   useEffect(() => {
-    const storedTransactions = localStorage.getItem("transactions");
+    if (!user) {
+      setTransactions([]);
+      return;
+    }
+    
+    const userSpecificKey = `transactions_${user.id}`;
+    const storedTransactions = localStorage.getItem(userSpecificKey);
+    
     if (storedTransactions) {
       setTransactions(JSON.parse(storedTransactions));
+    } else {
+      setTransactions([]); // Reset when switching to a user with no transactions
     }
-  }, []);
+  }, [user]);
 
-  // Salvar transações no localStorage
+  // Save transactions to localStorage with user-specific key
   useEffect(() => {
-    localStorage.setItem("transactions", JSON.stringify(transactions));
-  }, [transactions]);
+    if (user) {
+      const userSpecificKey = `transactions_${user.id}`;
+      localStorage.setItem(userSpecificKey, JSON.stringify(transactions));
+    }
+  }, [transactions, user]);
 
   const addTransaction = (transaction: Omit<Transaction, "id">) => {
+    if (!user) {
+      toast.error("Você precisa estar logado para adicionar transações.");
+      return;
+    }
+    
     const newTransaction = {
       ...transaction,
       id: uuidv4(),
